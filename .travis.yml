@@ -1,0 +1,29 @@
+language: node_js
+node_js:
+  - 13
+
+services:
+  - docker
+
+#preinstalls
+install:
+  - echo "nothing to install"
+
+#scripts to run
+before_script:
+ - echo "no tests"
+# Build
+script:
+  - docker build -t udagram-api-feed ./udagram-api-feed
+  - docker tag udagram-api-feed elijah/udagram-api-feed:v1 
+  - docker build -t udagram-api-user ./udagram-api-user
+  - docker tag udagram-api-user elijah/udagram-api-user:v1
+  - docker build -t udagram-frontend ./udagram-frontend
+  - docker tag udagram-frontend sudkul/udagram-frontend:v1  
+  - docker build -t udagram-reverseproxy ./udagram-reverseproxy
+  - docker tag udagram-reverseproxy sudkul/udagram-reverseproxy:v1  
+      
+# Assuming DOCKER_PASSWORD and DOCKER_USERNAME are set in the Travis repository settings
+after_success:
+   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+   - docker push sudkul/udagram-api-feed:v1
