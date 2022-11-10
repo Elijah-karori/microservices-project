@@ -5,25 +5,30 @@ node_js:
 services:
   - docker
 
-#preinstalls
+# Pre-testing installs
 install:
-  - echo "nothing to install"
+  - echo "Pre-testing install - nothing needs to be installed"
 
-#scripts to run
+# Scripts to be run such as tests
 before_script:
- - echo "no tests"
-# Build
+  - echo "No tests"
+
 script:
+  # These build will happen in the Travis worker node
+  - docker --version # print the version for logging
   - docker build -t udagram-api-feed ./udagram-api-feed
-  - docker tag udagram-api-feed elijah/udagram-api-feed:v1 
   - docker build -t udagram-api-user ./udagram-api-user
-  - docker tag udagram-api-user elijah/udagram-api-user:v1
+  - docker build -t reverseproxy ./udagram-reverseproxy
   - docker build -t udagram-frontend ./udagram-frontend
-  - docker tag udagram-frontend sudkul/udagram-frontend:v1  
-  - docker build -t udagram-reverseproxy ./udagram-reverseproxy
-  - docker tag udagram-reverseproxy sudkul/udagram-reverseproxy:v1  
-      
-# Assuming DOCKER_PASSWORD and DOCKER_USERNAME are set in the Travis repository settings
+  - docker tag udagram-api-feed elijahkarori/udagram-api-feed
+  - docker tag udagram-api-user elijahkarori/udagram-api-user
+  - docker tag reverseproxy elijahkarori/reverseproxy
+  - docker tag udagram-frontend elijahkarori/udagram-frontend
+
 after_success:
-   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-   - docker push sudkul/udagram-api-feed:v1
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push elijahkarori/udagram-api-feed
+  - docker push elijahkarori/udagram-api-user
+  - docker push elijahkarori/reverseproxy
+  - docker push elijahkarori/udagram-frontend
+
